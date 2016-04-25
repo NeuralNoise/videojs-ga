@@ -1,6 +1,6 @@
 /*
-* videojs-ga - v0.4.2 - 2015-02-06
-* Copyright (c) 2015 Michael Bensoussan
+* videojs-ga - v0.4.2 - 2016-04-25
+* Copyright (c) 2016 Michael Bensoussan
 * Licensed MIT
 */
 (function() {
@@ -102,8 +102,10 @@
       }
     };
     sendbeacon = function(action, nonInteraction, value) {
+      var send;
+      send = options.gaPrefix ? "" + options.gaPrefix + ".send" : 'send';
       if (window.ga) {
-        ga('send', 'event', {
+        ga(send, 'event', {
           'eventCategory': eventCategory,
           'eventAction': action,
           'eventLabel': eventLabel,
@@ -111,6 +113,9 @@
           'nonInteraction': nonInteraction
         });
       } else if (window._gaq) {
+        if (options.gaPrefix) {
+          throw new Error('videojs.ga plugin does not support a gaPrefix with the `_gaq` implementation.');
+        }
         _gaq.push(['_trackEvent', eventCategory, action, eventLabel, value, nonInteraction]);
       } else if (options.debug) {
         console.log("Google Analytics not detected");

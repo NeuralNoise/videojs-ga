@@ -112,14 +112,20 @@ videojs.plugin 'ga', (options = {}) ->
 
   sendbeacon = ( action, nonInteraction, value ) ->
     # console.log action, " ", nonInteraction, " ", value
+    send = if options.gaPrefix
+      "#{options.gaPrefix}.send"
+    else
+      'send'
     if window.ga
-      ga 'send', 'event',
+      ga send, 'event',
         'eventCategory' 	: eventCategory
         'eventAction'		  : action
         'eventLabel'		  : eventLabel
         'eventValue'      : value
         'nonInteraction'	: nonInteraction
     else if window._gaq
+      if options.gaPrefix
+        throw new Error('videojs.ga plugin does not support a gaPrefix with the `_gaq` implementation.')
       _gaq.push(['_trackEvent', eventCategory, action, eventLabel, value, nonInteraction])
     else if options.debug
       console.log("Google Analytics not detected")
